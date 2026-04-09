@@ -22,6 +22,7 @@ app.use(
       "https://webneststudio.in",
       "http://webneststudio.in",
       "http://localhost",       // for local testing
+      "http://localhost:3000",
       "http://127.0.0.1",
     ],
     methods: ["POST", "GET"],
