@@ -1,0 +1,119 @@
+<!--
+  ============================================================
+  WebNestStudio — Contact Form HTML Snippet
+  ============================================================
+  Copy this into your existing website's contact section.
+
+  IMPORTANT: Replace YOUR_BACKEND_URL with your actual
+  Render.com URL after deployment.
+  Example: https://webneststudio-backend.onrender.com
+  ============================================================
+-->
+
+<!-- Contact Form -->
+<form id="contactForm">
+  <div>
+    <label for="name">Your Name *</label>
+    <input type="text" id="name" name="name" required placeholder="John Doe" />
+  </div>
+
+  <div>
+    <label for="email">Email Address *</label>
+    <input type="email" id="email" name="email" required placeholder="john@example.com" />
+  </div>
+
+  <div>
+    <label for="phone">Phone Number (optional)</label>
+    <input type="tel" id="phone" name="phone" placeholder="+91 98765 43210" />
+  </div>
+
+  <!-- Optional: if you offer multiple services -->
+  <div>
+    <label for="service">Service Interested In</label>
+    <select id="service" name="service">
+      <option value="">-- Select a Service --</option>
+      <option value="Website Design">Website Design</option>
+      <option value="Website Development">Website Development</option>
+      <option value="SEO & Marketing">SEO & Marketing</option>
+      <option value="Logo & Branding">Logo & Branding</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="message">Your Message *</label>
+    <textarea id="message" name="message" required rows="5" placeholder="Tell us about your project..."></textarea>
+  </div>
+
+  <!-- Status message shown after submit -->
+  <div id="formStatus" style="display:none; padding: 12px; border-radius: 6px; margin-top: 10px;"></div>
+
+  <button type="submit" id="submitBtn">Send Message</button>
+</form>
+
+
+<script>
+  // ============================================================
+  // IMPORTANT: Replace this with your actual Render.com URL!
+  // ============================================================
+  const BACKEND_URL = "https://YOUR_BACKEND_URL.onrender.com";
+
+  document.getElementById("contactForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Stop the page from refreshing
+
+    const submitBtn = document.getElementById("submitBtn");
+    const statusDiv = document.getElementById("formStatus");
+
+    // Collect form data
+    const formData = {
+      name:    document.getElementById("name").value.trim(),
+      email:   document.getElementById("email").value.trim(),
+      phone:   document.getElementById("phone").value.trim(),
+      service: document.getElementById("service").value,
+      message: document.getElementById("message").value.trim(),
+    };
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
+    statusDiv.style.display = "none";
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // ✅ Success message
+        statusDiv.style.display = "block";
+        statusDiv.style.backgroundColor = "#d1fae5";
+        statusDiv.style.color = "#065f46";
+        statusDiv.style.border = "1px solid #6ee7b7";
+        statusDiv.textContent = "✅ " + result.message;
+        document.getElementById("contactForm").reset(); // Clear the form
+      } else {
+        // ❌ Error message from server
+        statusDiv.style.display = "block";
+        statusDiv.style.backgroundColor = "#fee2e2";
+        statusDiv.style.color = "#991b1b";
+        statusDiv.style.border = "1px solid #fca5a5";
+        statusDiv.textContent = "❌ " + result.error;
+      }
+
+    } catch (error) {
+      // Network or unexpected error
+      statusDiv.style.display = "block";
+      statusDiv.style.backgroundColor = "#fee2e2";
+      statusDiv.style.color = "#991b1b";
+      statusDiv.style.border = "1px solid #fca5a5";
+      statusDiv.textContent = "❌ Could not connect. Please try again or email us directly.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Send Message";
+    }
+  });
+</script>
